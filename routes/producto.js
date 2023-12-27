@@ -18,4 +18,12 @@ api.post('/registro_variedad_producto',authenticate.decodeToken, productoControl
 api.get('/obtener_variedad_producto/:id',authenticate.decodeToken, productoController.obtener_variedad_producto);
 api.delete('/eliminar_variedad_producto/:id',authenticate.decodeToken, productoController.eliminar_variedad_producto);
 
+//////////////////////////////////////////////////////////////////
+
+api.post('/crear_categoria_admin',authenticate.decodeToken, productoController.crear_categoria_admin);
+api.get('/listar_categorias_admin',authenticate.decodeToken, productoController.listar_categorias_admin);
+api.post('/crear_subcategoria_admin',authenticate.decodeToken, productoController.crear_subcategoria_admin);
+api.delete('/eliminar_subcategoria_admin/:id',authenticate.decodeToken, productoController.eliminar_subcategoria_admin);
+api.put('/cambiar_estado_producto_admin/:id',authenticate.decodeToken, productoController.cambiar_estado_producto_admin);
+
 module.exports = api;
