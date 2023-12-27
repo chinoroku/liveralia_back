@@ -1,6 +1,8 @@
 var Carrito = require('../models/carrito');
 var Variedad = require('../models/variedad');
 var Direccion = require('../models/direccion');
+var Venta = require('../models/venta');
+var Venta_detalle = require('../models/venta_detalle');
 
 const crear_producto_carrito = async function(req,res){
     if(req.user){
@@ -76,6 +78,92 @@ const eliminar_direccion_cliente = async function(req,res){
     }
 }
 
+const validar_payment_id_venta = async function(req,res){
+    
+     if(req.user){
+        let payment_id = req.params['payment_id'];
+        let ventas = await Venta.find({transaccion:payment_id});
+        res.status(200).send(ventas);
+    }else{
+        res.status(500).send({data:undefined,message: 'ErrorToken'});
+    } 
+}
+
+const crear_venta_cliente = async function(req,res){
+    if(req.user){
+        let data = req.body;
+        console.log(data.estado);
+        data.year = new Date().getFullYear();
+        data.month = new Date().getMonth()+1;
+        data.day = new Date().getDate();
+        data.estado = 'Pagado';
+
+        console.log(data.total);
+        data.total= 100;
+
+        let ventas = await Venta.find().sort({createdAt:-1});
+
+        if(ventas.length == 0){
+            data.serie = 1;
+        }else{
+            data.serie = ventas[0].serie + 1;
+        }
+
+       /* for(var item of data.detalles){
+            data.total += item.subtotal;      
+        }*/
+        
+        let venta = await Venta.create(data);
+
+        for(var item of data.detalles){
+
+            item.year = new Date().getFullYear();
+            item.month = new Date().getMonth()+1;
+            item.day = new Date().getDate();
+            item.venta = venta._id;
+            await Venta_detalle.create(item);
+        
+        }
+
+
+
+        await Carrito.deleteMany({cliente:data.cliente});
+
+        res.status(200).send(venta);
+    }else{
+        res.status(500).send({data:undefined,message: 'ErrorToken'});
+    }
+}
+
+
+const obtener_informacion_venta = async function(req,res){
+   
+    if(req.user){
+        let id = req.params['id'];
+        let venta = await Venta.findById({_id:id}).populate('cliente');
+        let detalles = await Venta_detalle.find({venta:id}).populate('producto').populate('variedad');
+        if(req.user.sub == venta.cliente._id){
+            res.status(200).send({venta,detalles});
+        }else{
+            res.status(200).send({data:undefined,message: 'No tienes acceso a esta venta'});
+        }
+    }else{
+        res.status(500).send({data:undefined,message: 'ErrorToken'});
+    }
+}
+
+const obtener_ventas_clientes = async function(req,res){
+   
+    if(req.user){
+
+        let ventas = await Venta.find({cliente:req.user.sub}).populate('cliente').populate('direccion');
+
+            res.status(200).send({ventas});
+    }else{
+        res.status(500).send({data:undefined,message: 'ErrorToken'});
+    }
+}
+
 
 module.exports = {
     crear_producto_carrito,
@@ -83,5 +171,9 @@ module.exports = {
     eliminar_producto_carrito,
     crear_direccion_cliente,
     obternet_direcciones_cliente,
-    eliminar_direccion_cliente
+    eliminar_direccion_cliente,
+    validar_payment_id_venta,
+    crear_venta_cliente,
+    obtener_informacion_venta,
+    obtener_ventas_clientes
 }
