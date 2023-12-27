@@ -92,14 +92,18 @@ const validar_payment_id_venta = async function(req,res){
 const crear_venta_cliente = async function(req,res){
     if(req.user){
         let data = req.body;
-        console.log(data.estado);
+        
         data.year = new Date().getFullYear();
         data.month = new Date().getMonth()+1;
         data.day = new Date().getDate();
         data.estado = 'Pagado';
-
         //console.log(data.total);
-        data.total= 100;
+        data.total= parseFloat(req.body.total);
+
+        if(data.total == undefined){
+            data.total=100;
+            console.log('total: '+req.body.total);
+        }
 
         let ventas = await Venta.find().sort({createdAt:-1});
 
