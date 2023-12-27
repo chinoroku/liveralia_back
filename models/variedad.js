@@ -6,6 +6,7 @@ var VariedadSchema = Schema({
     variedad : {type: String, required: true},
     sku : {type: String, required: true},
     producto : {type: Schema.ObjectId, ref: 'producto', required: true},
+    stock: { type: Number, default: 0 },
     createdAt : {type: Date, default: Date.now}
 });
 
