@@ -30,8 +30,7 @@ const registro_producto_admin = async function(req,res){
                 let producto = await Producto.create(data);
                 res.status(200).send({data:producto});
             } catch (error) {
-                console.log(error);
-                res.status(200).send({data:undefined,message: 'No se pudo crear el producto.'});   
+                res.status(200).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
             }
         }
     }else{
@@ -49,7 +48,7 @@ const listar_productos_admin = async function(req,res){
                 {titulo: new RegExp(filtro,'i')},
                 {categoria: new RegExp(filtro,'i')}
             ]
-        }).sort({createdAt:-1});
+        }).sort({ createdAt: -1 });
         res.status(200).send(productos);
 
     }else{
@@ -125,9 +124,9 @@ const actualizar_producto_admin = async function(req,res){
                         });
                         res.status(200).send({data:producto});
                     } catch (error) {
-                        res.status(200).send({data:undefined,message: 'No se pudo crear el producto.'});   
+                        res.status(200).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
                     }
-                }else{
+                } else{
     
                      data.slug = slugify(data.titulo);
                      
@@ -146,8 +145,8 @@ const actualizar_producto_admin = async function(req,res){
                          res.status(200).send({data:undefined,message: 'No se pudo crear el producto.'});   
                      }
                 }
-            }else{
-                res.status(200).send({data:undefined,message: 'El titulo de producto ya existe.'});   
+            } else {
+                res.status(500).send({ data: undefined, message: 'El titulo del producto ya existe.' });
             }
         }else{
             if(req.files){
@@ -174,7 +173,7 @@ const actualizar_producto_admin = async function(req,res){
                     });
                     res.status(200).send({data:producto});
                 } catch (error) {
-                    res.status(200).send({data:undefined,message: 'No se pudo crear el producto.'});   
+                    res.status(200).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
                 }
             }else{
 
@@ -201,19 +200,6 @@ const actualizar_producto_admin = async function(req,res){
     }
 }
 
-const registro_variedad_producto = async (req,res)=>{
-    if(req.user){
-
-       let data = req.body;
-
-       let variedad = await Variedad.create(data);
-       res.status(200).send({data:variedad});
-
-    }else{
-        res.status(500).send({data:undefined,message: 'ErrorToken'});
-    }
-}
-
 
 const obtener_variedades_producto = async function(req,res){
     if(req.user){
@@ -221,27 +207,6 @@ const obtener_variedades_producto = async function(req,res){
        let id = req.params['id'];
        let variedades = await Variedad.find({producto:id}).sort({stock:-1});
        res.status(200).send(variedades);
-
-    }else{
-        res.status(500).send({data:undefined,message: 'ErrorToken'});
-    }
-}
-
-const eliminar_variedad_producto = async function(req,res){
-    if(req.user){
-
-       let id = req.params['id'];
-
-       let reg = await Variedad.findById({_id:id});
-
-       if(reg.stock == 0){
-            let variedad = await Variedad.findOneAndRemove({_id:id});
-            res.status(200).send(variedad);
-       }else{
-            res.status(200).send({data:undefined,message: 'No se puede eliminar esta variedad'});
-       }
-
-       
 
     }else{
         res.status(500).send({data:undefined,message: 'ErrorToken'});
@@ -408,6 +373,50 @@ const eliminar_galeria_producto_admin = async function(req,res){
 
     }else{
         res.status(500).send({data:undefined,message: 'ErrorToken'});
+    }
+}
+
+const registro_variedad_producto = async function (req, res) {
+    if (req.user) {
+
+        let data = req.body;
+
+        let variedad = await Variedad.create(data);
+        res.status(200).send({ data: variedad });
+
+    } else {
+        res.status(500).send({ data: undefined, message: 'ERROR TOKEN' });
+    }
+}
+
+const obtener_variedad_producto = async function (req, res) {
+    if (req.user) {
+
+        let id = req.params['id'];
+        let variedades = await Variedad.find({ producto: id }).sort({ stock: -1 });
+        res.status(200).send(variedades);
+
+    } else {
+        res.status(500).send({ data: undefined, message: 'ERROR TOKEN' });
+    }
+}
+
+const eliminar_variedad_producto = async function (req, res) {
+    if (req.user) {
+
+        let id = req.params['id'];
+
+        let reg = await Variedad.findById({ _id: id });
+
+        if (reg.stock == 0) {
+            let variedad = await Variedad.findOneAndDelete({ _id: id });
+            res.status(200).send(variedad);
+        } else {
+            res.status(200).send({ data: undefined, message: 'NO SE PUEDE ELIMINAR ESTA VARIEDAD' });
+        }
+
+    } else {
+        res.status(500).send({ data: undefined, message: 'ERROR TOKEN' });
     }
 }
 
