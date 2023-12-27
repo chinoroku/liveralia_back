@@ -98,7 +98,7 @@ const crear_venta_cliente = async function(req,res){
         data.day = new Date().getDate();
         data.estado = 'Pagado';
 
-        console.log(data.total);
+        //console.log(data.total);
         data.total= 100;
 
         let ventas = await Venta.find().sort({createdAt:-1});
@@ -109,10 +109,6 @@ const crear_venta_cliente = async function(req,res){
             data.serie = ventas[0].serie + 1;
         }
 
-       /* for(var item of data.detalles){
-            data.total += item.subtotal;      
-        }*/
-        
         let venta = await Venta.create(data);
 
         for(var item of data.detalles){
@@ -121,11 +117,10 @@ const crear_venta_cliente = async function(req,res){
             item.month = new Date().getMonth()+1;
             item.day = new Date().getDate();
             item.venta = venta._id;
+
             await Venta_detalle.create(item);
         
         }
-
-
 
         await Carrito.deleteMany({cliente:data.cliente});
 
