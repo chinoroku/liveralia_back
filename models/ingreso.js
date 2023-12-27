@@ -2,16 +2,16 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var IngresoSchema = Schema({
-    nombres : {type: String, required: true},
-    apellidos : {type: String, required: false},
-    email : {type: String, required: true, unique: true},
-    password : {type: String, required: true},
-    estado : {type: Boolean, default: true},
+    proveedor : {type: String, required: true}, //F
+    ncomprobante : {type: String, required: true}, //F
+    documento : {type: String, required: true}, //F
+
+    monto_total : {type: String, required: true}, //F
+    serie : {type: Number, required: true}, //NF
+    monto_resultante : {type: String, required: true}, //NF
+    usuario: {type: Schema.ObjectId, ref: 'usuario', required: true}, //NF
     createdAt : {type: Date, default: Date.now},
 
-    pais : {type: String, required: false},
-    recovery : {type: String, required: false},
-    genero : {type: String, required: false},
 });
 
 module.exports = mongoose.model('ingreso',IngresoSchema);

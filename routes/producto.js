@@ -4,10 +4,12 @@ var authenticate = require('../middlewares/authenticate');
 var multipart = require('connect-multiparty');
 
 var path = multipart({uploadDir: './uploads/productos'});
+var path_ingreso = multipart({uploadDir: './uploads/facturas'});
 var api = express.Router();
 
 api.post('/registro_producto_admin', [authenticate.decodeToken, path], productoController.registro_producto_admin);
 api.get('/listar_productos_admin/:filtro?', authenticate.decodeToken, productoController.listar_productos_admin);
+api.get('/listar_activos_productos_admin', authenticate.decodeToken, productoController.listar_activos_productos_admin);
 api.get('/obtener_portada_producto/:img', productoController.obtener_portada_producto);
 api.get('/obtener_producto_admin/:id',authenticate.decodeToken, productoController.obtener_producto_admin);
 api.put('/actualizar_producto_admin/:id',[authenticate.decodeToken, path], productoController.actualizar_producto_admin);
@@ -25,5 +27,9 @@ api.get('/listar_categorias_admin',authenticate.decodeToken, productoController.
 api.post('/crear_subcategoria_admin',authenticate.decodeToken, productoController.crear_subcategoria_admin);
 api.delete('/eliminar_subcategoria_admin/:id',authenticate.decodeToken, productoController.eliminar_subcategoria_admin);
 api.put('/cambiar_estado_producto_admin/:id',authenticate.decodeToken, productoController.cambiar_estado_producto_admin);
+
+//////////////////////////////////////////////////////////////////
+api.post('/registro_ingreso_admin',[authenticate.decodeToken, path_ingreso], productoController.registro_ingreso_admin);
+
 
 module.exports = api;

@@ -408,10 +408,10 @@ const eliminar_variedad_producto = async function (req, res) {
 
         let id = req.params['id'];
 
-        let reg = await Variedad.findById({ _id: id });
+        let reg = await Variedad.findById({ _id:id });
 
         if (reg.stock == 0) {
-            let variedad = await Variedad.findOneAndDelete({ _id: id });
+            let variedad = await Variedad.findOneAndDelete({ _id:id });
             res.status(200).send(variedad);
         } else {
             res.status(200).send({ data: undefined, message: 'NO SE PUEDE ELIMINAR ESTA VARIEDAD' });
