@@ -11,7 +11,8 @@ var producto_router = require('./routes/producto');
 app.use(bodyparser.urlencoded({limit: '50mb', extended: true}));
 app.use(bodyparser.json({limit: '50mb', extended: true}));
 
-mongoose.connect('mongodb://127.0.0.1:27017/bd_liveralia')
+//mongoose.connect('mongodb+srv://angelocaveri:angelo1@cluster0.ukqf3.mongodb.net/bd_liveralia')
+mongoose.connect('mongodb+srv://angelocaveri:angelo1@cluster0.ukqf3.mongodb.net/bd_liveralia?retryWrites=true&w=majority')
 .then(() => {
     var port = process.env.PORT || 4201;
     app.listen(port, function() {

@@ -1,4 +1,5 @@
 var Producto = require('../models/producto');
+var Variedad = require('../models/variedad');
 var slugify = require('slugify');
 var fs = require('fs');
 var path = require('path');
@@ -24,7 +25,7 @@ const registro_producto_admin = async function (req, res) {
                 let producto = await Producto.create(data);
                 res.status(200).send({ data: producto });
             } catch (error) {
-                res.status(500).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
+                res.status(200).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
             }
         }
     } else {
@@ -42,7 +43,7 @@ const listar_productos_admin = async function (req, res) {
                 { titulo: new RegExp(filtro, 'i') },
                 { categoria: new RegExp(filtro, 'i') },
             ]
-        });
+        }).sort({ createdAt: -1 });
         res.status(200).send(productos);
     } else {
         res.status(500).send({ data: undefined, message: 'ERROR TOKEN' });
@@ -106,12 +107,13 @@ const actualizar_producto_admin = async function (req, res) {
                             categoria: data.categoria,
                             extracto: data.extracto,
                             estado: data.estado,
+                            str_variedad: data.str_variedad,
                             descuento: data.descuento,
                             portada: data.portada,
                         });
                         res.status(200).send({ data: producto });
                     } catch (error) {
-                        res.status(500).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
+                        res.status(200).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
                     }
                 } else {
                     data.slug = slugify(data.titulo)
@@ -122,15 +124,16 @@ const actualizar_producto_admin = async function (req, res) {
                             categoria: data.categoria,
                             extracto: data.extracto,
                             estado: data.estado,
+                            str_variedad: data.str_variedad,
                             descuento: data.descuento,
                         });
                         res.status(200).send({ data: producto });
                     } catch (error) {
-                        res.status(500).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
+                        res.status(200).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
                     }
                 }
-            }else {
-                res.status(500).send({ data: undefined, message: 'El titulo del producto ya existe.' });                    
+            } else {
+                res.status(500).send({ data: undefined, message: 'El titulo del producto ya existe.' });
             }
         } else {
             if (req.files) {
@@ -148,12 +151,13 @@ const actualizar_producto_admin = async function (req, res) {
                         categoria: data.categoria,
                         extracto: data.extracto,
                         estado: data.estado,
+                        str_variedad: data.str_variedad,
                         descuento: data.descuento,
                         portada: data.portada,
                     });
                     res.status(200).send({ data: producto });
                 } catch (error) {
-                    res.status(500).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
+                    res.status(200).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
                 }
             } else {
                 data.slug = slugify(data.titulo)
@@ -164,14 +168,59 @@ const actualizar_producto_admin = async function (req, res) {
                         categoria: data.categoria,
                         extracto: data.extracto,
                         estado: data.estado,
+                        str_variedad: data.str_variedad,
                         descuento: data.descuento,
                     });
                     res.status(200).send({ data: producto });
                 } catch (error) {
-                    res.status(500).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
+                    res.status(200).send({ data: undefined, message: 'NO SE PUDO GUARDAR EL PRODUCTO' });
                 }
             }
         }
+    } else {
+        res.status(500).send({ data: undefined, message: 'ERROR TOKEN' });
+    }
+}
+
+const registro_variedad_producto = async function (req, res) {
+    if (req.user) {
+
+        let data = req.body;
+
+        let variedad = await Variedad.create(data);
+        res.status(200).send({ data: variedad });
+
+    } else {
+        res.status(500).send({ data: undefined, message: 'ERROR TOKEN' });
+    }
+}
+
+const obtener_variedad_producto = async function (req, res) {
+    if (req.user) {
+
+        let id = req.params['id'];
+        let variedades = await Variedad.find({ producto: id }).sort({ stock: -1 });
+        res.status(200).send(variedades);
+
+    } else {
+        res.status(500).send({ data: undefined, message: 'ERROR TOKEN' });
+    }
+}
+
+const eliminar_variedad_producto = async function (req, res) {
+    if (req.user) {
+
+        let id = req.params['id'];
+
+        let reg = await Variedad.findById({ _id: id });
+
+        if (reg.stock == 0) {
+            let variedad = await Variedad.findOneAndDelete({ _id: id });
+            res.status(200).send(variedad);
+        } else {
+            res.status(200).send({ data: undefined, message: 'NO SE PUEDE ELIMINAR ESTA VARIEDAD' });
+        }
+
     } else {
         res.status(500).send({ data: undefined, message: 'ERROR TOKEN' });
     }
@@ -182,5 +231,8 @@ module.exports = {
     listar_productos_admin,
     obtener_portada_producto,
     obtener_producto_admin,
-    actualizar_producto_admin
+    actualizar_producto_admin,
+    registro_variedad_producto,
+    obtener_variedad_producto,
+    eliminar_variedad_producto,
 }
