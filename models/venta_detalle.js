@@ -5,7 +5,6 @@ var Venta_detalleSchema = Schema({
     year : {type: Number, required: true},
     month : {type: Number, required: true},
     day : {type: Number, required: true},
-    proveedor : {type: String, required: true},
     subtotal : {type: Number, required: true},
     precio_unidad : {type: Number, required: true},
     cantidad : {type: Number, required: true},
