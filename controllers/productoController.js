@@ -226,6 +226,17 @@ const listar_activos_productos_admin = async function(req,res){
     }
 }
 
+const listar_activos_productos_admin_no_activos = async function(req,res){
+    if(req.user){
+
+        let productos = await Producto.find({}).sort({ createdAt: -1 });
+        res.status(200).send(productos);
+
+    }else{
+        res.status(500).send({data:undefined,message: 'ErrorToken'});
+    }
+}
+
 const registro_ingreso_admin = async function(req,res){
     if(req.user){
 
@@ -544,5 +555,6 @@ module.exports = {
     listar_categorias_admin,
     crear_subcategoria_admin,
     eliminar_subcategoria_admin,
-    cambiar_estado_producto_admin
+    cambiar_estado_producto_admin,
+    listar_activos_productos_admin_no_activos
 }
