@@ -434,5 +434,6 @@ module.exports = {
     subir_imagen_producto_admin,
     obtener_galeria_producto,
     obtener_galeria_producto_admin,
-    eliminar_galeria_producto_admin
+    eliminar_galeria_producto_admin,
+    obtener_variedad_producto
 }
