@@ -32,6 +32,9 @@ api.put('/cambiar_estado_producto_admin/:id',authenticate.decodeToken, productoC
 
 //////////////////////////////////////////////////////////////////
 api.post('/registro_ingreso_admin',[authenticate.decodeToken, path_ingreso], productoController.registro_ingreso_admin);
+api.get('/obtener_ingreso_admin/:inicio/:hasta', authenticate.decodeToken, productoController.obtener_ingreso_admin);
+api.get('/obtener_comprobante_ingreso/:name', productoController.obtener_comprobante_ingreso);
+api.get('/obtener_detalles_ingreso_admin/:id',authenticate.decodeToken,productoController.obtener_detalles_ingreso_admin);
 
 //////////////////////////////////////////////////////////////////
 api.post('/subir_imagen_producto_admin', [authenticate.decodeToken, path_galeria], productoController.subir_imagen_producto_admin);

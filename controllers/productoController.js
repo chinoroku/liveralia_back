@@ -534,6 +534,50 @@ const cambiar_estado_producto_admin = async function(req,res){
     }
 }
 
+const obtener_ingreso_admin = async function(req,res){
+
+    if(req.user){
+        let inicio = req.params['inicio'];
+        let hasta = req.params['hasta'];
+
+        var ingresos = await Ingreso.find({
+            createdAt: {
+                $gte : new Date(inicio+'T00:00:00'),
+                $lt : new Date(hasta+'T00:00:00'),
+            }
+        });
+        res.status(200).send(ingresos);
+    }else{
+        res.status(500).send({data:undefined,message: 'ErrorToken'});
+    }
+}
+
+const obtener_comprobante_ingreso = async function(req,res){
+    let name = req.params['name'];
+
+    fs.stat('./uploads/facturas/'+name,function(err){
+        if(err){
+            let path_img = './uploads/default.jpg';
+            res.status(200).sendFile(path.resolve(path_img));
+        }else{
+            let path_img = './uploads/facturas/'+name;
+            res.status(200).sendFile(path.resolve(path_img));
+        }
+    });
+}
+
+const obtener_detalles_ingreso_admin = async function(req,res){
+
+    if(req.user){
+        let id = req.params['id'];
+
+        var ingreso = await Ingreso.findById({_id:id});
+        var detalles = await Ingreso_detalle.find({ingreso:id}).populate('producto').populate('variedad');
+        res.status(200).send({ingreso,detalles});
+    }else{
+        res.status(500).send({data:undefined,message: 'ErrorToken'});
+    }
+}
 
 module.exports = {
     registro_producto_admin,
@@ -556,5 +600,8 @@ module.exports = {
     crear_subcategoria_admin,
     eliminar_subcategoria_admin,
     cambiar_estado_producto_admin,
-    listar_activos_productos_admin_no_activos
+    listar_activos_productos_admin_no_activos,
+    obtener_ingreso_admin,
+    obtener_comprobante_ingreso,
+    obtener_detalles_ingreso_admin
 }
