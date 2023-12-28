@@ -40,7 +40,7 @@ const obtener_carrito_cliente = async function(req,res){
 const eliminar_producto_carrito = async function(req,res){
     if(req.user){
        let id = req.params['id'];
-       let reg = await Carrito.findByIdAndRemove({_id:id});
+       let reg = await Carrito.findOneAndDelete({_id:id});
        res.status(200).send(reg);
     }else{
         res.status(500).send({data:undefined,message: 'ErrorToken'});
@@ -98,11 +98,14 @@ const crear_venta_cliente = async function(req,res){
         data.day = new Date().getDate();
         data.estado = 'Pagado';
         //console.log(data.total);
-        data.total= parseFloat(req.body.total);
+        
 
         if(data.total == undefined){
             data.total=100;
             console.log('total: '+req.body.total);
+        }else
+        {
+            data.total= parseFloat(req.body.total);
         }
 
         let ventas = await Venta.find().sort({createdAt:-1});
