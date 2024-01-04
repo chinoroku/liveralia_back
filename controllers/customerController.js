@@ -4,6 +4,7 @@ var Direccion = require('../models/direccion');
 var Venta = require('../models/venta');
 var Venta_detalle = require('../models/venta_detalle');
 
+
 const crear_producto_carrito = async function(req,res){
     if(req.user){
         let data = req.body;
@@ -28,14 +29,28 @@ const crear_producto_carrito = async function(req,res){
 }
 
 const obtener_carrito_cliente = async function(req,res){
+   
     if(req.user){
        let carrito = await Carrito.find({cliente:req.user.sub}).populate('producto').populate('variedad').sort({createdAt:-1}).limit(5);
        let carrito_general = await Carrito.find({cliente:req.user.sub}).populate('producto').populate('variedad').sort({createdAt:-1});
+
        res.status(200).send({carrito:carrito,carrito_general:carrito_general});
     }else{
         res.status(500).send({data:undefined,message: 'ErrorToken'});
     }
 }
+
+const obtener_carrito_cliente_venta = async function(req,res){
+    console.log('obtiene carrito');
+     if(req.user){
+        let carrito = await Carrito.find({cliente:req.user.sub}).populate('producto').populate('variedad').sort({createdAt:-1}).limit(5);
+        let carrito_general = await Carrito.find({cliente:req.user.sub}).populate('producto').populate('variedad').sort({createdAt:-1});
+ 
+        res.status(200).send({carrito:carrito,carrito_general:carrito_general});
+     }else{
+         res.status(500).send({data:undefined,message: 'ErrorToken'});
+     }
+ }
 
 const eliminar_producto_carrito = async function(req,res){
     if(req.user){
@@ -102,7 +117,7 @@ const crear_venta_cliente = async function(req,res){
 
         if(data.total == undefined){
             data.total=100;
-            console.log('total: '+req.body.total);
+           //console.log('total: '+req.body.total);
         }else
         {
             data.total= parseFloat(req.body.total);
@@ -136,7 +151,6 @@ const crear_venta_cliente = async function(req,res){
         res.status(500).send({data:undefined,message: 'ErrorToken'});
     }
 }
-
 
 const obtener_informacion_venta = async function(req,res){
    
@@ -177,5 +191,6 @@ module.exports = {
     validar_payment_id_venta,
     crear_venta_cliente,
     obtener_informacion_venta,
-    obtener_ventas_clientes
+    obtener_ventas_clientes,
+    obtener_carrito_cliente_venta
 }

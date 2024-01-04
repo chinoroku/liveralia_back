@@ -14,7 +14,7 @@ const io = new Server(httpServer,{
 io.on('connection',(socket)=>{
     socket.on('send_cart',function(data){
         io.emit('listen_cart',data);
-        console.log(data);
+       //console.log(data);
       });
 });
 
@@ -34,7 +34,7 @@ mongoose.connect('mongodb+srv://angelocaveri:angelo1@cluster0.ukqf3.mongodb.net/
 .then(() => {
     var port = process.env.PORT || 4201;
     httpServer.listen(port, function() {
-        console.log('SERVIDOR CORRIENDO EN EL PUERTO: ' + port);
+       //console.log('SERVIDOR CORRIENDO EN EL PUERTO: ' + port);
     })
 })
 .catch((err) => {

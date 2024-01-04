@@ -13,7 +13,7 @@ const registro_producto_admin = async function(req,res){
     if(req.user){
         let data = req.body;
         let productos = await Producto.find({titulo:data.titulo});
-        console.log(productos.length);
+       //console.log(productos.length);
 
         if(productos.length>= 1){
             res.status(200).send({data:undefined,message: 'El titulo del producto ya existe.'});   
@@ -98,7 +98,7 @@ const actualizar_producto_admin = async function(req,res){
 
 
         let productos = await Producto.find({titulo:data.titulo});
-        console.log(productos.length);
+       //console.log(productos.length);
 
         if(productos.length>= 1){
             if(productos[0]._id == id){
@@ -252,7 +252,7 @@ const registro_ingreso_admin = async function(req,res){
             }
 
             let detalles = JSON.parse(data.detalles); //detalles ingreso
-            console.log(detalles);
+           //console.log(detalles);
 
             var img_path = req.files.documento.path;
             var str_img = img_path.split('\\');
@@ -287,7 +287,7 @@ const registro_ingreso_admin = async function(req,res){
                     let cantidades = parseInt(producto.stock) + parseInt(item.cantidad);
                     let subtotales = parseFloat(subtotal_residual) + parseFloat(subtotal_ingreso);
 
-                    console.log(subtotales + ' ' + cantidades);
+                   //console.log(subtotales + ' ' + cantidades);
 
                     let precio_equilibro = Math.ceil(subtotales/cantidades);
 
@@ -304,7 +304,7 @@ const registro_ingreso_admin = async function(req,res){
             }
             res.status(200).send(ingreso);
         } catch (error) {
-            console.log(error);
+           //console.log(error);
             res.status(200).send({message: 'No se puedo registrar el ingreso'});
         }
 
@@ -331,7 +331,7 @@ const subir_imagen_producto_admin = async function(req,res){
             let imagen = await Galeria.create(data);
             res.status(200).send(imagen);
         } catch (error) {
-            console.log(error);
+           //console.log(error);
             res.status(200).send({data:undefined,message: 'No se pudo crear el producto.'});   
         }
     }else{
@@ -379,7 +379,7 @@ const eliminar_galeria_producto_admin = async function(req,res){
             let galeria = await Galeria.findOneAndDelete({_id:id});
             res.status(200).send(galeria);
         } catch (error) {
-            console.log(error);
+           //console.log(error);
             res.status(200).send({data:undefined,message: 'No se pudo eliminar la imagen.'});   
         }
 
