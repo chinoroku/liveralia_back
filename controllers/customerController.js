@@ -3,6 +3,7 @@ var Variedad = require('../models/variedad');
 var Direccion = require('../models/direccion');
 var Venta = require('../models/venta');
 var Venta_detalle = require('../models/venta_detalle');
+const nodemailer = require('nodemailer');
 
 
 const crear_producto_carrito = async function(req,res){
@@ -144,6 +145,62 @@ const crear_venta_cliente = async function(req,res){
         
         }
 
+        // Crear un transporter para enviar correos
+    const transporter = nodemailer.createTransport({
+        // Configuración del servicio de correo electrónico (Gmail en este ejemplo)
+        service: 'gmail',
+        auth: {
+            user: 'angelocaveri@gmail.com',
+            pass: 'stdz abew rvyi xgml',
+        },
+    });
+
+    // Construir el cuerpo del correo electrónico con la tabla de detalles
+    const detallesHTML = data.detalles.map(
+        (item) =>
+            `<tr>
+                <td>${item.variedad}</td>
+                <td>${item.precio_unidad}</td>
+                <td>${item.cantidad}</td>
+                <td>${item.subtotal}</td>
+            </tr>`
+    ).join('');
+
+    const emailBody = `
+        <p>Detalles de la compra:</p>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${detallesHTML}
+            </tbody>
+        </table>
+    `;
+
+         // Configurar opciones del correo
+    const mailOptions = {
+        from: 'angelocaveri@gmail.com',
+        to: 'angelo_cavero@hotmail.com', // Reemplaza con la dirección de correo del destinatario
+        subject: 'Detalles de la compra',
+        html: emailBody,
+    };
+
+    // Enviar el correo electrónico
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error(error);
+        } else {
+            console.log('Correo enviado: ' + info.response);
+        }
+    });
+
+
         await Carrito.deleteMany({cliente:data.cliente});
 
         res.status(200).send(venta);
@@ -156,7 +213,7 @@ const obtener_informacion_venta = async function(req,res){
    
     if(req.user){
         let id = req.params['id'];
-        let venta = await Venta.findById({_id:id}).populate('cliente');
+        let venta = await Venta.findById({_id:id}).populate('cliente').populate('direccion');
         let detalles = await Venta_detalle.find({venta:id}).populate('producto').populate('variedad');
         if(req.user.sub == venta.cliente._id){
             res.status(200).send({venta,detalles});
