@@ -1,7 +1,6 @@
 var express = require('express');
 var notacreditoController = require('../controllers/notacreditoController');
 var authenticate = require('../middlewares/authenticate');
-var multipart = require('connect-multiparty');
 
 var api = express.Router();
 
