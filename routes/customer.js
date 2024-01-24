@@ -18,4 +18,6 @@ api.post('/crear_venta_cliente',cauthenticate.decodeToken, customerController.cr
 api.get('/obtener_informacion_venta/:id',cauthenticate.decodeToken,customerController.obtener_informacion_venta);
 api.get('/obtener_ventas_clientes',cauthenticate.decodeToken,customerController.obtener_ventas_clientes);
 
+api.post('/obtener_nota_credito',cauthenticate.decodeToken, customerController.obtener_nota_credito);
+
 module.exports = api;

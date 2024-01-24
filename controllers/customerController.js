@@ -4,6 +4,7 @@ var Direccion = require('../models/direccion');
 var Venta = require('../models/venta');
 var Venta_detalle = require('../models/venta_detalle');
 const nodemailer = require('nodemailer');
+var NotaCredito = require('../models/notacredito');
 
 
 const crear_producto_carrito = async function(req,res){
@@ -108,6 +109,8 @@ const validar_payment_id_venta = async function(req,res){
 const crear_venta_cliente = async function(req,res){
     if(req.user){
         let data = req.body;
+
+        console.log('data: ',data);
         
         data.year = new Date().getFullYear();
         data.month = new Date().getMonth()+1;
@@ -158,62 +161,20 @@ const crear_venta_cliente = async function(req,res){
         
         }
 
-/*
-        // Crear un transporter para enviar correos
-    const transporter = nodemailer.createTransport({
-        // Configuración del servicio de correo electrónico (Gmail en este ejemplo)
-        service: 'gmail',
-        auth: {
-            user: 'angelocaveri@gmail.com',
-            pass: 'stdz abew rvyi xgml',
-        },
-    });
+        for(var item of data.notacredito){
 
-    // Construir el cuerpo del correo electrónico con la tabla de detalles
-    const detallesHTML = data.detalles.map(
-        (item) =>
-            `<tr>
-                <td>${item.variedad}</td>
-                <td>${item.precio_unidad}</td>
-                <td>${item.cantidad}</td>
-                <td>${item.subtotal}</td>
-            </tr>`
-    ).join('');
-
-    const emailBody = `
-        <p>Detalles de la compra:</p>
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Precio</th>
-                    <th>Cantidad</th>
-                    <th>Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${detallesHTML}
-            </tbody>
-        </table>
-    `;
-
-         // Configurar opciones del correo
-    const mailOptions = {
-        from: 'angelocaveri@gmail.com',
-        to: 'angelo_cavero@hotmail.com', // Reemplaza con la dirección de correo del destinatario
-        subject: 'Detalles de la compra',
-        html: emailBody,
-    };
-
-    // Enviar el correo electrónico
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error(error);
-        } else {
-            console.log('Correo enviado: ' + info.response);
+            NotaCredito.updateOne(
+                { _id: item._id },
+                { $inc: { total: -data.total } }
+              )
+                .then((resultado) => {
+                  console.log('nota de credito restado con éxito:', resultado);
+                })
+                .catch((err) => {
+                  console.error('Error al restar el nota de credito:', err);
+                });
+        
         }
-    });
-*/
 
         await Carrito.deleteMany({cliente:data.cliente});
 
@@ -251,6 +212,35 @@ const obtener_ventas_clientes = async function(req,res){
     }
 }
 
+const obtener_nota_credito = async function(req,res){
+   
+    if(req.user){
+        let data = req.body;
+
+        console.log(data)
+
+        let notacredito = await NotaCredito.find({serie:data.transaccion});
+
+            // Verifica si se encontraron registros
+        if (notacredito.length === 0) {
+            // No se encontraron registros, envía un mensaje de error
+            res.status(404).send({ data:undefined,message: 'Nota de crédito no encontrada' });
+        } else {
+
+            // Se encontraron registros, envía la nota de crédito
+            if(parseInt(notacredito[0].total, 10) > parseInt(data.total, 10)){
+                
+                res.status(200).send({ notacredito });
+            }else{
+                res.status(200).send({ notacredito:null,message: 'Nota de crédito no tiene suficientes fondos' }); 
+            }
+            
+        }
+    }else{
+        res.status(500).send({data:undefined,message: 'ErrorToken'});
+    }
+}
+
 
 module.exports = {
     crear_producto_carrito,
@@ -263,5 +253,6 @@ module.exports = {
     crear_venta_cliente,
     obtener_informacion_venta,
     obtener_ventas_clientes,
-    obtener_carrito_cliente_venta
+    obtener_carrito_cliente_venta,
+    obtener_nota_credito
 }

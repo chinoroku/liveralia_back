@@ -5,16 +5,19 @@ const Venta_detalle = require('../models/venta_detalle');
 var Variedad = require('../models/variedad');
 const nodemailer = require('nodemailer');
 
-const listar_devolucion_admin = async function(req,res){
-    if(req.user){
+const listar_devolucion_admin = async function (req, res) {
+    if (req.user) {
 
-        //let filtro = req.params['filtro'];
+        let filtro = req.params['filtro'];
 
-        let notacredito = await NotaCredito.find({}).sort({ createdAt: -1 });
+        let notacredito = await NotaCredito.find({
+            $or: [
+                { serie: new RegExp(filtro, 'i') },
+            ]
+        }).populate('cliente');
         res.status(200).send(notacredito);
-
-    }else{
-        res.status(500).send({data:undefined,message: 'ErrorToken'});
+    } else {
+        res.status(500).send({ data: undefined, message: 'ERROR TOKEN' });
     }
 }
 
@@ -160,6 +163,8 @@ const registro_devolucion_admin = async function(req,res){
         res.status(500).send({data:undefined,message: 'ErrorToken'});
     }
 }
+
+
 
 
 
