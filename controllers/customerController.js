@@ -141,10 +141,24 @@ const crear_venta_cliente = async function(req,res){
             item.day = new Date().getDate();
             item.venta = venta._id;
 
+            
+
+              Variedad.updateOne(
+                { _id: item.variedad },
+                { $inc: { stock: -parseInt(item.cantidad, 10) } }
+              )
+                .then((resultado) => {
+                  console.log('Stock restado con éxito:', resultado);
+                })
+                .catch((err) => {
+                  console.error('Error al restar el stock:', err);
+                });  
+
             await Venta_detalle.create(item);
         
         }
 
+/*
         // Crear un transporter para enviar correos
     const transporter = nodemailer.createTransport({
         // Configuración del servicio de correo electrónico (Gmail en este ejemplo)
@@ -199,7 +213,7 @@ const crear_venta_cliente = async function(req,res){
             console.log('Correo enviado: ' + info.response);
         }
     });
-
+*/
 
         await Carrito.deleteMany({cliente:data.cliente});
 

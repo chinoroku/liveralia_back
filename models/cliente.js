@@ -8,7 +8,6 @@ var ClienteSchema = Schema({
     password : {type: String, required: true},
     estado : {type: Boolean, default: true},
     createdAt : {type: Date, default: Date.now},
-
     pais : {type: String, required: false},
     recovery : {type: String, required: false},
     genero : {type: String, required: false},

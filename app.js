@@ -25,6 +25,7 @@ var public_router = require('./routes/public');
 var customer_router = require('./routes/customer');
 var venta_router = require('./routes/venta');
 var proveedor_router = require('./routes/proveedor');
+var notacredito_router = require('./routes/notacredito');
 
 app.use(bodyparser.urlencoded({limit: '50mb', extended: true}));
 app.use(bodyparser.json({limit: '50mb', extended: true}));
@@ -56,5 +57,6 @@ app.use('/api',public_router);
 app.use('/api',customer_router);
 app.use('/api',venta_router);
 app.use('/api',proveedor_router);
+app.use('/api',notacredito_router);
 
 module.exports = app;
