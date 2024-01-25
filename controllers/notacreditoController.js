@@ -66,9 +66,11 @@ const registro_devolucion_admin = async function(req,res){
        for(var item of data.detalleventas){
         for (const [clave, valor] of Object.entries(item.variedad)) {
             if(clave === '_id'){
+                console.log(valor);
+                console.log(item.cantidad);
                 Variedad.updateOne(
                     { _id: valor },
-                    { $inc: { stock: +parseInt(item.cantidad, 10) } }
+                    { $inc: { stock: +((data.Monto/item.precio_unidad)) } }
                   )
                     .then((resultado) => {
                       console.log('Stock sumado con éxito:', resultado);
@@ -78,6 +80,7 @@ const registro_devolucion_admin = async function(req,res){
                     });
             }
           }
+
 
           
           Venta_detalle.updateOne(
